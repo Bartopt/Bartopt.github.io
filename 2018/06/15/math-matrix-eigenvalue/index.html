@@ -134,7 +134,7 @@
 
 
 
-  <title>Categories | pH's blog</title>
+  <title>利用特征值分解理解矩阵特征值和特征向量的几何意义 | pH's blog</title>
   
 
 
@@ -249,40 +249,193 @@
 
   <div id="posts" class="posts-expand">
     
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/15/math-matrix-eigenvalue/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hao Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="pH's blog">
+    </span>
+
     
-    
-    <div class="post-block page">
       <header class="post-header">
 
-	<h1 class="post-title" itemprop="name headline">Categories</h1>
-
-
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
         
         
-          <div class="category-all-page">
-            <div class="category-all-title">
-                2 categories in total
-            </div>
-            <div class="category-all">
-              <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Course-project/">Course project</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Mathematics/">Mathematics</a><span class="category-list-count">1</span></li></ul>
-            </div>
-          </div>
+          <h1 class="post-title" itemprop="name headline">利用特征值分解理解矩阵特征值和特征向量的几何意义</h1>
         
-      </div>
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-15T20:33:19+08:00">2018-06-15</time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mathematics/" itemprop="url" rel="index">
+                    <span itemprop="name">Mathematics</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
       
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>一直有一个疑问，矩阵的特征值和特征向量到底代表了矩阵的什么性质？尤其是特征值还被称为矩阵的Eigenvalues ，然后看了知乎上的一些解释，也未能得到较好的理解，有些太理论：）</p>
+<p>然后本文就从自己现有知识体系下解释一下矩阵的特征向量与特征值的几何意义。有如下公式，$ x ，y $为向量，$ A $为矩阵，而且是方阵，因为只有方阵才有特征值和特征向量的概念，我会在最后给出非方阵的分析，基于SVD的理解，但不是很透彻，仅作为了解。</p>
+<p>$$ y = Ax$$</p>
+<p>本文主要分析矩阵$A$的特征值在这个过程中到底起到了怎么样的作用。</p>
+<h1 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h1><p>首先你需要了解以下知识</p>
+<h2 id="1-坐标变换"><a href="#1-坐标变换" class="headerlink" title="1.坐标变换"></a>1.坐标变换</h2><p>坐标变换建议阅读：<a href="https://blog.csdn.net/u011240016/article/details/52821139" target="_blank" rel="noopener">https://blog.csdn.net/u011240016/article/details/52821139</a></p>
+<p>坐标变换想做什么事呢？假设$n$维空间有两组线性无关的基 ${α_1,…,α_n}$，${β_1,…,β_n}$，它们一定可以互相表示，有以下公式成立，记过渡矩阵为$C$，当${α_1,…,α_n}$为标准正交基时，$[β_1,…,β_n]=C$ ,下图的第一个公式称为基变换。</p>
+<p><img src="/2018/06/15/math-matrix-eigenvalue/img1.jpg" alt="table"></p>
+<p>此外还有坐标变换，向量$γ$在基底$α_1,α_2,…,α_n $的坐标是$x_1,x_2,…,x_n$,在基底$β_1,β_2,…,β_n$下的坐标是$y_1,y_2,…,y_n$则坐标变换公式如下 ,<strong>注意坐标变换与基变换中$C$的位置不同</strong>。</p>
+<p><img src="/2018/06/15/math-matrix-eigenvalue/img2.jpg" alt="table"></p>
+<h2 id="2-特征值分解"><a href="#2-特征值分解" class="headerlink" title="2.特征值分解"></a>2.特征值分解</h2><p>特征值分解就是矩阵的对角化，就是可以将$A$分解为下面的形式，$Q$是由对应特征向量组成的矩阵，列向量是特征向量，$Σ$为对角矩阵，对角线上的元素为$A$的特征值。</p>
+<p>$$A = QΣQ^{-1}$$</p>
+<p>并不是所有方阵都可以对角化，方阵A可以被对角化的条件是 </p>
+<ul>
+<li>n阶方阵有n个不同的特征值</li>
+<li>如果阶n方阵存在重复的特征值,每个特征值的线性无关的特征向量的个数恰好等于该特征值的重复次数</li>
+</ul>
+<p>实际上都是为了保证$Q$是可逆的，如果存在$n$个线性无关的特征向量，则矩阵$Q$一定可逆 。</p>
+<h2 id="3-SVD分解"><a href="#3-SVD分解" class="headerlink" title="3.SVD分解"></a>3.SVD分解</h2><p>这个网上有许多介绍，我就不赘述了。任意矩阵都可以进行SVD分解。</p>
+<h1 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h1><h2 id="1-先考虑一个比较特殊的情况-A-是方阵，并且可以特征值分解"><a href="#1-先考虑一个比较特殊的情况-A-是方阵，并且可以特征值分解" class="headerlink" title="1.先考虑一个比较特殊的情况,$A$是方阵，并且可以特征值分解"></a>1.先考虑一个比较特殊的情况,$A$是方阵，并且可以特征值分解</h2><p> $A$是方阵，因此$Ax$后得到的$y$仍是原空间的一个向量，没有投影或者升维的过程。从结果来看，$A$的作用是将$x$旋转一定角度并拉伸。</p>
+<p>那具体如何过程是怎样的，首先将$A$做特征值分解，$Ax=QΣQ^{-1}x$，$Q$是满秩的也就是列线性无关，可以看作是原空间的一组基，所以$Q^{-1}x$可以看作是坐标变换，其含义是将$x$变换到新的基下(对于同一个过渡矩阵$C$，<strong>基变化和坐标变化是反向的</strong>)，这些基由特征向量构成，特征向量是线性无关的但不是正交的（实对称矩阵特征向量正交），再与$Σ$相乘，$Σ$是对角矩阵，其含义就是将$x$沿着变换后的坐标轴缩放，这里的比例系数是新的基（特征向量）对应的特征值，然后再乘以$Q$变回到原始的标准坐标系下。</p>
+<p>上面的操作等价于在标准坐标系下沿着特征向量的方向直接缩放，每个方向缩放的尺度就是对应的特征值。以上两种不同的操作最后可以得到同样结果，即$x$被旋转并缩放。实际上是把$x$朝特定的方向缩放，使我们产生了$x$被旋转的感觉。</p>
+<p>那么如果我们将$x$乘以很多遍$A$会有什么效果？从上述分析可以得到，$x$会被拉伸到$A$的最大特征值对应的特征向量的方向上。这里盗图一张。</p>
+<p><img src="/2018/06/15/math-matrix-eigenvalue/img3.png" alt="table"></p>
+<h2 id="2-A是普通方阵，不能被特征值分解"><a href="#2-A是普通方阵，不能被特征值分解" class="headerlink" title="2.A是普通方阵，不能被特征值分解"></a>2.A是普通方阵，不能被特征值分解</h2><p>普通$n$阶方阵一定有$n$个特征值，对应$n$个特征向量，但是特征向量不一定是线性无关的，所以不能对其进行特征值分解（以下分析不太严谨），但我们可以认为这只不过是对应的拉伸的方向少了一些，比如此时只有$m（m&lt;n）$个线性无关的特征向量，那么$Ax$后，$x$就只在$m$个特征向量的方向上进行缩放。 </p>
+<h2 id="3-A是非方阵"><a href="#3-A是非方阵" class="headerlink" title="3.A是非方阵"></a>3.A是非方阵</h2><p>非方阵的话就不存在特征值和特征向量的概念了，其实不属于本文的讨论的范围，但简单说一下，我们可以对$A$矩阵进行SVD分解。</p>
+<p>SVD分解可得到如下形式，$U$，$V^T$是正交矩阵，$Σ$是奇异值矩阵，只有对角线元素有值，$Ax$的意义是先在原空间内做旋转，再投影$（m＜n）$到低维空间并缩放（奇异值）倍，或升维度$（m＞n）$到高维空间并缩放（奇异值）倍，然后在新的空间内旋转。结果就是向量$x$被旋转、缩放、投影或升维。</p>
+<p><img src="/2018/06/15/math-matrix-eigenvalue/img4.png" alt="table"></p>
+
       
     </div>
     
     
     
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Matrix/" rel="tag"><i class="fa fa-tag"></i> Matrix</a>
+          
+            <a href="/tags/eigen-value/" rel="tag"><i class="fa fa-tag"></i> eigen value</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/13/SDM/" rel="next" title="基于SDM的人脸特征点检测">
+                <i class="fa fa-chevron-left"></i> 基于SDM的人脸特征点检测
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
   </div>
 
 
@@ -315,8 +468,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -396,6 +558,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#预备知识"><span class="nav-number">2.</span> <span class="nav-text">预备知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-坐标变换"><span class="nav-number">2.1.</span> <span class="nav-text">1.坐标变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-特征值分解"><span class="nav-number">2.2.</span> <span class="nav-text">2.特征值分解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-SVD分解"><span class="nav-number">2.3.</span> <span class="nav-text">3.SVD分解</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#正文"><span class="nav-number">3.</span> <span class="nav-text">正文</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-先考虑一个比较特殊的情况-A-是方阵，并且可以特征值分解"><span class="nav-number">3.1.</span> <span class="nav-text">1.先考虑一个比较特殊的情况,$A$是方阵，并且可以特征值分解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-A是普通方阵，不能被特征值分解"><span class="nav-number">3.2.</span> <span class="nav-text">2.A是普通方阵，不能被特征值分解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-A是非方阵"><span class="nav-number">3.3.</span> <span class="nav-text">3.A是非方阵</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
