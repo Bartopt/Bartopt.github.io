@@ -134,7 +134,7 @@
 
 
 
-  <title>基于SDM的人脸特征点检测 | pH's blog</title>
+  <title>蒙特卡洛方法及其求积分应用 | pH's blog</title>
   
 
 
@@ -261,7 +261,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/13/SDM/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/16/math-probability-MC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Hao Peng">
@@ -278,7 +278,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">基于SDM的人脸特征点检测</h1>
+          <h1 class="post-title" itemprop="name headline">蒙特卡洛方法及其求积分应用</h1>
         
 
         <div class="post-meta">
@@ -290,7 +290,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-13T15:13:16+08:00">2018-06-13</time>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-16T10:58:53+08:00">2018-06-16</time>
             
 
             
@@ -311,8 +311,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Course-project/" itemprop="url" rel="index">
-                    <span itemprop="name">Course project</span>
+                  <a href="/categories/Mathematics/" itemprop="url" rel="index">
+                    <span itemprop="name">Mathematics</span>
                   </a>
                 </span>
 
@@ -348,32 +348,57 @@
       
 
       
-        <p>视频监控课程上选做的大作业，基于SDM的人脸特征点检测。人脸特征点检测是人脸检测后的再处理，为人脸识别提供基础。  </p>
-<p>参考博客：<a href="https://blog.csdn.net/xiamentingtao/article/details/47306887" target="_blank" rel="noopener">https://blog.csdn.net/xiamentingtao/article/details/47306887</a>  </p>
-<p>论文作者主页：<a href="http://xiong828.github.io/sdm.html" target="_blank" rel="noopener">http://xiong828.github.io/sdm.html</a>  </p>
-<p>代码地址：<a href="https://github.com/xiamenwcy/impSDM/tree/dev1" target="_blank" rel="noopener">https://github.com/xiamenwcy/impSDM/tree/dev1</a>  </p>
-<h1 id="算法原理"><a href="#算法原理" class="headerlink" title="算法原理"></a>算法原理</h1><p> 具体原理以及公式推导在论文以及博客中说的很详细了，我就不再重复了，主要讲一下我对SDM的理解。  </p>
-<p>机器学习中一般解决优化问题是为了得到分类器或回归器的最优参数，然后使用训练好的分类器或回归器完成对新样本分类或回归的任务。比如神经网络就是一个非线性函数，网络节点的连接权值就是模型的参数，通过最小化$Loss$可以得到最佳权值，测试样本来时正向传播就可以对其分类或者回归。  </p>
-<p><strong>机器学习的目的是通过对训练样本的学习，使得模型在测试样本上能取得较好的效果，也就是泛化误差小</strong>。以神经网络做分类任务为例，说明SDM方法与它的不同。它们都是追求泛化误差最小，但神经网络属于有参模型，它从训练样本中学到了模型的最优参数，测试样本只要正向传播就可以满足泛化误差最小这个最优化问题，有参模型的假设是训练误差最小测试误差就最小，因此测试时可以不更新。SDM属于无参方法，它直接优化$X$（人脸特征点）位置，每个测试样本到来时它都在解决一个新的优化问题，它从训练样本中学习到了解优化问题的过程。它的回归模型嵌套在最优化问题的子问题下。  </p>
-<p>以人脸特征点检测为例，SDM学会自变量在不同情况下该如何移动以保证优化问题的Loss降低，它学习一个映射$R$，$R$可以将点描述子的特征向量$Φ$映射到$Δx$。假设第10点是眼角，通过训练可以得到$R$，$R$矩阵中对应第10点的那一列可以根据第10点的描述子（可以是SIFT、HOG等），映射得到$Δx$，如果10点在脸上，此时描述子为$ Φ_1 $，$ R×Φ_1 $会得到Δx向眼睛方向移动，反之，如果10点在眼球上，此时描述子为$Φ_2$，$R×Φ_2$会得到Δx向远离眼睛方向移动。  </p>
-<p>SDM学习特定问题的优化过程，通过训练样本学得descent direction。测试样本到来时，仍是在解决优化问题，不过使用学习到的descent direction来解决新的优化问题，用级联回归模型完成优化任务。  </p>
-<p>那SDM是如何学习优化过程得到$R$的？优化过程本来是用Jacobi或hessian（论文中把这里记为$R$）和残差求$Δx$，但人脸特征点检测中训练样本的$Δx$已知，残差也已知，那么就可以反过来学习Jacobi或hessian（也就是$R$）。$Δx$<strong>就是监督信息</strong>。从机器学习来看，三大要素，数据、模型、策略。数据为$（Φ，Δx）$（特征向量，偏移量）；模型为线性模型$Δx=R×Φ$，策略是最小二乘。解决完该问题后得到$R_0$，将数据代入得到新的数据，然后可得到一系列的$R_k$。用级联回归的想法完成。  </p>
-<h1 id="实验结果及分析"><a href="#实验结果及分析" class="headerlink" title="实验结果及分析"></a>实验结果及分析</h1><p>一共做了四组对比实验，用线性模型 还是原始的优化模型 ； $ R_0 $ ，$R_1$都是描述子到位移映射，那重复使用$R_0$效果如何，因为我们认为不同R之间只是序列上的区别，本质上没有区别。 具体设计如下  <img src="/2018/06/13/SDM/SDM_table.png" alt="table"></p>
-<p>CED曲线如下，比较四个实验的CED，从可以看出实验1的效果最好，其次是实验3，实验2和实验4效果不好，可能是尺度上的原因，第一步映射比较大，可以尝试使用衰减系数。实验2效果差于实验1原因可能是$Φ^*$估计的不准确，导致实际测试中误差较大。   </p>
-<p><img src="/2018/06/13/SDM/SDM_CED.png" alt="CED"></p>
-<p>在测试集上的效果图  </p>
-<p><img src="/2018/06/13/SDM/SDM_result4.png" alt="SDM_result2"></p>
-<h1 id="自制DEMO"><a href="#自制DEMO" class="headerlink" title="自制DEMO"></a>自制DEMO</h1><p>将最好的模型使用到DEMO里的结果图。使用OpenCV自带的harr人脸检测器，然后在此基础上执行特征点回归，与手工标记的效果进行对比，结果如下图所示 ,左侧是人脸检测器的结果，右侧是我用Ps手工找到五个定位点，得到真实的bbox的结果。  </p>
-<p><img src="/2018/06/13/SDM/SDM_result3.png" alt="SDM_result3"></p>
-<p>可以看出人脸特征点检测很依赖于人脸检测结果，用haar特征做人脸检测后，由于检测框与训练的框不一致，特征点的回归效果并不好。因为初值（起始位置）选取的不好。可以尝试手工标记一下，进行对比。发现对于同一个特征点回归器，人脸检测做得更准确，特征点检测的效果更好。  </p>
-<p>训练的时候就使用人脸检测器切图，然后在此基础上特征点回归器效果应该会好。原因一是初始shape会更好，更容易回归；二是学到的$R$更适合face detector。  </p>
-<p>对检测结果的bbox在横向和纵向进行不同程度的缩放，效果有所提升。如果检测器得到的box能够完全拟合手工标记点的box，那就可以得到良好的特征点检测结果。代码中用特征点扩充来模拟检测框，这样可以保证初始点始终在检测框的中心。  </p>
-<p><img src="/2018/06/13/SDM/SDM_result5.png" alt="SDM_result5"></p>
-<h1 id="展望与收获"><a href="#展望与收获" class="headerlink" title="展望与收获"></a>展望与收获</h1><ul>
-<li>用检测器切图并训练特征点检测模型，这样需要处理数据  </li>
-<li>$Φ^*$是用样本均值估计的，不准确，可以将数据写成齐次坐标的形式并直接训练出来  </li>
-<li>起初想着用坐标映射到偏移，但这明显没利用到图片信息。不可能实现。从人类角度思考，一定是依据图像特征再平移。所以要学习特征到偏移量的映射才合理  </li>
-<li>优化问题中构造了子问题，子问题才是要学习模型。原优化问题只是辅助分析。构造性的建立学习模型的思想  </li>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最初听到蒙特卡洛方法（Monte Carlo，下文用MC代替）是在本科的工程经济学课堂上，当时汪帅（汪洋老师是个特别有人格魅力的老师，同学们都被他的折服，他还是我答辩的三位老师之一：））提到了了用MC解决一个现金流的估值然后决策的问题。</p>
+<p>这学期的CV中又提到粒子群滤波做运动跟踪的任务，其中涉及到了MC，重要性采样（IS）等，MC方法应用广泛，RL中也用到了它，还有一些微积分问题也可以转化为MC方法可解决的问题。</p>
+<p>本文主要介绍MC方法以及它是如何用到求积分问题上。</p>
+<h1 id="MC方法"><a href="#MC方法" class="headerlink" title="MC方法"></a>MC方法</h1><p>学习一个方法，我们先要知道输入是什么，输出是什么，这个方法做了什么，完成了什么任务，知道这些后再学习具体流程才会有更好的理解。</p>
+<p>那么MC方法解决什么问题呢，它的核心在于求一个随机变量的期望问题，如下所示，离散或者连续分布都可以，但是这个分布的概率分布$p(x)$必须是已知的。MC方法说的是你可以按已知的概率分布采样，只要你采样足够多，那么就可以得到这个随机变量的期望。</p>
+<p>$$ E(x) = \int xp(x)dx$$</p>
+<p>$$ E(x) = x_1p(x_1) + x_2p(x_2) + … + x_np(x_n)$$ </p>
+<p>$$  E(x) = \frac{1}{N} \sum_{i=1}^N{x_i}$$</p>
+<p>对于离散随机变量，如果知道它的分布，直接可以用公式求取期望，不一定需要用到MC，但用MC也work。尤其是伯努利分布时，如果概率$p$未知还可以通过求期望估计出$p$，最简单的例子就是通过抛硬币实验得到正面的概率为0.5，此外撒点求面积也是这个思路。对于连续型随机变量，即使你知道概率密度，但也存在着不好积分问题，这时就可以通过MC方法求期望。 </p>
+<h1 id="采样方法"><a href="#采样方法" class="headerlink" title="采样方法"></a>采样方法</h1><p>那这样连续随机变量求期望的问题是不是就已经解决了？当然不是，还有一个问题，我们如何获得服从特定分布的采样？一般来说有以下方法。</p>
+<h2 id="逆采样"><a href="#逆采样" class="headerlink" title="逆采样"></a>逆采样</h2><p>也就是随机数发生器。对任意随机变量$s$的概率密度函数积分可以得到累计分布函数（CDF），CDF横轴是随机变量取值范围，纵轴是[0,1]。然后我们交换横纵坐标轴，可以得到下面的图，计算机可以产生[0,1]的均匀分布的样本点，然后做逆变换就可以得到服从随机变量$x$分布的采样。</p>
+<p><img src="/2018/06/16/math-probability-MC/img1.png" alt="table"></p>
+<p>这是一种处理随机变量的技巧，图像处理中的直方图均衡化用的也是用的这个技巧。对于任给的随机变量$s$，都可以做一种变换$T^{-1}(s)$，使新得到的随机变量$r$是[0,1]区间上的均匀分布。以上具体推导与证明可以参考《数字图像处理（第二版）》72页。</p>
+<h2 id="重要性采样"><a href="#重要性采样" class="headerlink" title="重要性采样"></a>重要性采样</h2><p>逆采样的方法就是构造随机数发生器，但这个过程中要求$p(x)$的积分。但是我们本来就是因为积分难求才用采样的方法来求期望，因此逆采样的方法有很大的局限性，因此引申出重要性采样的方法。</p>
+<p>公式如下图所示，这里$f(x)$可以先看做是$x$，稍后我们会将其扩展到$x$的任意函数，原理见后面的LOTUS定理。$p(x)$为待求随机变量$x$的概率密度函数，$q(x)$为我们已知的一个概率密度函数，可以是均匀分布等，它的CDF很容易得到，这样就可以将按照$p(x)$采样的问题转换为按照$q(x)$采样，只需要对采样出来的随机变量乘以$\frac{p(x)}{q(x)}$就可以了，这样多次采样我们就可以求出原问题的期望。这里$\frac{p(x)}{q(x)}$称为重要性权重。 </p>
+<p><img src="/2018/06/16/math-probability-MC/img3.png" alt="table"> </p>
+<p>上述两种方法只是很基础的采样方法，此外还有拒绝采样，MCMC等。  </p>
+<h1 id="MC求积分"><a href="#MC求积分" class="headerlink" title="MC求积分"></a>MC求积分</h1><p>观察下式，用MC方法求随机变量$x$的期望的过程相当于求了$g(x) = xp(x)$这个函数的积分，积分区间为$x$的取值区间。因此在求$g(x)$的定积分时，就可以构造随机变量$x$与分布$p(x)$，用MC方法求积分问题。</p>
+<p>$$   \sum_{i=1}^N{x_i} = E(x) = \int xp(x) =  \int xp(x)dx = \int g(x)dx$$</p>
+<p>但是上述函数形式为$x$，而我们实际的积分函数可以是$x$的任意函数$g(x)$，如果随机变量换成函数值，我们又不知道函数值$g(x)$的分布。那这个事情如何来做？已经有人想好了，参考<a href="https://en.wikipedia.org/wiki/Law_of_the_unconscious_statistician" target="_blank" rel="noopener">无意识统计学家法则（Law of the unconscious statistician）</a>。</p>
+<p>LOTUS到底表达了一件什么事呢？它的意思是：已知随机变量$X$的概率分布，但不知道$g(X)$的分布，此时用LOTUS公式能计算出函数$g(X)$的数学期望。LOTUS的公式如下：</p>
+<ul>
+<li>X是离散分布时</li>
+</ul>
+<p>$$E[g(X)]=∑_xg(x)f_X(x)$$</p>
+<ul>
+<li>X是连续分布时</li>
+</ul>
+<p>$$E[g(X)]=∫_{−∞}^∞g(x)fX(x)dx$$</p>
+<p>其实就是在计算期望时，用已知的$X$的PDF（或PMF）代替未知的$g(X)$的PDF（或PMF）。这说明我们在求$g(x)$的期望时，可以按照$x$的分布来采样，比较直观的理解就是它可以融合对应同一个$g(x)$的概率值。以离散随机变量为例，假设$g(x)= x^2 $，$x ={1,-1}$，$p(x = 1) = 0.5$，$p(x = -1) = 0.5$，$g(x)= {1}$，我们<strong>可以</strong>在不知道$g(x)$分布的前提下，直接利用$x$的分布计算出$g(x)$的期望。虽然会多进行了一次运算，但最后结果是一致的。其实就是这样做会将对应的概率值融合，直观理解是这样，同时LOTUS也告诉我们这样做是对的。</p>
+<p>$$E[g(X)] =x_1^2p(x = 1) + x_2^2p(x = -1) =  1 × 0.5 + 1 × 0.5 = 1$$</p>
+<p>因此对于任意函数$g(x)$的积分问题，我们都可以构造随机变量$h(x) =  \frac{g(x)}{f(x)} $，$f(x) 服从 U(a，b)$，然后按照$f(x)$对$h(x)$采样，其期望值就是函数$g(x)$的积分。 </p>
+<p>需要注意的是MC方法最本质的就是要解决随机变量的期望问题，而不是解决积分问题，积分问题只是MC方法的一个应用，我刚开始理解的不对，以至于看到期望的积分表达式还想把他变成积分问题来做，这样其实多此一举，但是如果这样做就是在做重要性采样。</p>
+<p> 对于真正的积分问题（不是随机变量求期望问题），一定不需要做重要性采样，直接均匀分布就ok，因为它本身就不是随机变量，我们只用构造一个简单的随机变量（比如均匀分布）就可以了。重要性采样是对针对随机变量的采样问题的。</p>
+<h1 id="MC如何解释撒点法求面积"><a href="#MC如何解释撒点法求面积" class="headerlink" title="MC如何解释撒点法求面积"></a>MC如何解释撒点法求面积</h1><p>问题如下，就是如何求得红色圆形的面积，当然我们都知道可以用撒点法来做。但是撒点法求如下圆的面积的理论依据是什么，用MC方法解释的话，求得的期望值是面积，但随机变量是什么？这个问题的来源是我看了一篇<a href="https://blog.csdn.net/ArtistA/article/details/51570878" target="_blank" rel="noopener">博客</a>，他认为需要用重要性采样的方法来解释撒点法算面积。</p>
+<p><img src="/2018/06/16/math-probability-MC/img5.png" alt="table"> </p>
+<p>我首先讲一下我对这个问题的理解，我们做这个事情的先验知识为如果两个维度都服从均匀分布并随机扔一个点，那么点落在圆内的概率$(p)$=圆的面积（$S_c$）/正方形的面积（$S_s$），因此构造离散随机变量$X$</p>
+<p>$$ X = \begin{cases}  0 &amp; 点在圆外 \\ S_s &amp; 点在圆内 \end{cases} $$</p>
+<p>$X(0) = 1 - p$,  $X(1) = p$,   $E(x) = S_sp$, 那通过MC的方法就可以得到随机变量$X$的期望$E(x) = S_sp$，而$S_sp = S_c$，那么就能得到$S_c$，大功告成，完全不需要重要性采样解释。 </p>
+<p>同时我按照上述博客中的思路，从重要性采样的角度分析了一下，感觉只是为了解释而解释。如果用重要性采样解释的的话，原始问题如左图形式，随机变量也就是圆的面积$S_c$不知道是什么，$g(x)$是他的分布，但也不知道具体形式。用重要性采样的方法转化为右图形式，$p(x)$是均匀分布，重要性权重$ \frac{g(x)}{p(x)}$是指示函数，落在圆内为1，圆外为0，认为$S_c$是指示函数$ \frac{g(x)}{p(x)}$的函数，指示函数为0，$S_c = 0$，指示函数为1，$S_c = S_s$，因此整个采样过程就被套在了重要性采样的框架下，但是感觉很牵强，为了解释而解释。其实在我的解释中随机变量$X$就充当了$ S_c \frac{g(x)}{f(x)}$这部分的角色。</p>
+<p><img src="/2018/06/16/math-probability-MC/img7.png" alt="table"> </p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>MC方法能做什么，已知随机变量的分布，用这个分布采样求随机变量的期望。</li>
+<li>由于LOTUS的保证，MC方法也可以求随机变量函数$f(x)$的期望，按照$x$的分布采样就可以，可以从融合相同取值的概率可以获得直观理解。对$x$采样就可以获得$f(x)$分布的采样。</li>
+<li>原始采样无法通过逆采样获得时，可通过重要性采样曲线求期望。</li>
+<li>积分问题可通过构造随机变量转化为求随机变量的期望问题，进而用MC方法做，一般转化为均匀分布的随机变量来做。</li>
+</ul>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li>重要性采样：<a href="https://blog.csdn.net/ArtistA/article/details/51570878" target="_blank" rel="noopener">https://blog.csdn.net/ArtistA/article/details/51570878</a> </li>
+<li>采样方法：<a href="https://blog.csdn.net/Dark_Scope/article/details/70992266" target="_blank" rel="noopener">https://blog.csdn.net/Dark_Scope/article/details/70992266</a> </li>
+<li>MC求积分：<a href="https://blog.csdn.net/baimafujinji/article/details/53869358" target="_blank" rel="noopener">https://blog.csdn.net/baimafujinji/article/details/53869358</a> </li>
 </ul>
 
       
@@ -392,9 +417,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Optimize/" rel="tag"><i class="fa fa-tag"></i> Optimize</a>
+            <a href="/tags/Probability/" rel="tag"><i class="fa fa-tag"></i> Probability</a>
           
-            <a href="/tags/Face-alignment/" rel="tag"><i class="fa fa-tag"></i> Face alignment</a>
+            <a href="/tags/Monte-Carlo/" rel="tag"><i class="fa fa-tag"></i> Monte Carlo</a>
           
         </div>
       
@@ -407,15 +432,15 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2018/06/15/math-matrix-eigenvalue/" rel="next" title="利用特征值分解理解矩阵特征值和特征向量的几何意义">
+                <i class="fa fa-chevron-left"></i> 利用特征值分解理解矩阵特征值和特征向量的几何意义
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/06/15/math-matrix-eigenvalue/" rel="prev" title="利用特征值分解理解矩阵特征值和特征向量的几何意义">
-                利用特征值分解理解矩阵特征值和特征向量的几何意义 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -567,7 +592,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#算法原理"><span class="nav-number">1.</span> <span class="nav-text">算法原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实验结果及分析"><span class="nav-number">2.</span> <span class="nav-text">实验结果及分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自制DEMO"><span class="nav-number">3.</span> <span class="nav-text">自制DEMO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#展望与收获"><span class="nav-number">4.</span> <span class="nav-text">展望与收获</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MC方法"><span class="nav-number">2.</span> <span class="nav-text">MC方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#采样方法"><span class="nav-number">3.</span> <span class="nav-text">采样方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#逆采样"><span class="nav-number">3.1.</span> <span class="nav-text">逆采样</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要性采样"><span class="nav-number">3.2.</span> <span class="nav-text">重要性采样</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MC求积分"><span class="nav-number">4.</span> <span class="nav-text">MC求积分</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MC如何解释撒点法求面积"><span class="nav-number">5.</span> <span class="nav-text">MC如何解释撒点法求面积</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
