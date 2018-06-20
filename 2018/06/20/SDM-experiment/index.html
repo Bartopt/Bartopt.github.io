@@ -134,7 +134,7 @@
 
 
 
-  <title>Category: Course project | pH's blog</title>
+  <title>基于SDM的人脸特征点检测（二） | pH's blog</title>
   
 
 
@@ -153,7 +153,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -247,83 +247,227 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block category">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>Course project<small>Category</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/20/SDM-experiment/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hao Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="pH's blog">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2018/06/20/SDM-experiment/" itemprop="url">
-              
-                <span itemprop="name">基于SDM的人脸特征点检测（二）</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">基于SDM的人脸特征点检测（二）</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-06-20T10:25:38+08:00"
-              content="2018-06-20" >
-          06-20
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-20T10:25:38+08:00">2018-06-20</time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Course-project/" itemprop="url" rel="index">
+                    <span itemprop="name">Course project</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-        
+      
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2018/06/13/SDM/" itemprop="url">
-              
-                <span itemprop="name">基于SDM的人脸特征点检测（一）</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2018-06-13T15:13:16+08:00"
-              content="2018-06-13" >
-          06-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
+      
+        <p>上一篇博客中介绍了SDM的算法原理以及实验效果，这篇文章主要介绍SDM算法的具体实现流程，这些流程是我阅读作者博客以及<a href="https://github.com/xiamenwcy/impSDM/tree/dev1" target="_blank" rel="noopener">源码</a>后的总结与理解。</p>
+<p>按照作者的介绍，我也分三部分介绍SDM的具体流程。最后我还会给出实验的评价指标。</p>
+<h1 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h1><p>Input：3702张图片（所有训练集图片）</p>
+<p>Output: mean_shape 3702张图片的特征点的平均值</p>
+<p>由于照片尺寸不一致，人脸大小也不一致，所以直接根据标注信息取均值是没有意义的。解决方法是按照true_shape模拟检测器，扩大两倍提取人脸区域图像，并将其放缩到400×400的尺寸下。然后取普氏变换后的特征点的平均值作为mean_shape。具体流程：  </p>
+<ol>
+<li>先正则化第一张图片</li>
+</ol>
+<ul>
+<li>取第一张图片true_shape的包围盒（即包含特征点的最小矩形，以下用bbox代替）。 </li>
+<li>将包围盒的左上点沿坐标系左上方向平移包围盒长和宽的一半，作为新的包围盒的左上点，宽和高分别取原来的2倍。用新的包围盒裁剪图片，这样裁剪出的人脸就基本上是人的正脸了，同时变换特征点的坐标。 </li>
+<li>缩放上面新得到的图片到400×400，同时变换特征点的坐标。这样就得到了第一张图片的400×400的正脸以及特征点的坐标。</li>
+</ul>
+<p><img src="/2018/06/20/SDM-experiment/img1.png" alt="table">    </p>
+<ol start="2">
+<li>正则其他图片</li>
+</ol>
+<p>通过普氏分析将其他图片的特征点与第一张正则化的特征点对齐，获得统一尺寸下的特征点，这样就可求解平均值了。关于普氏分析有个小故事，点击<a href="https://en.wikipedia.org/wiki/Procrustes" target="_blank" rel="noopener">这里</a>了解一下！</p>
+<p>普氏分析用的是matlab里的<a href="https://ww2.mathworks.cn/help/stats/procrustes.html" target="_blank" rel="noopener">procrustes()</a>函数，给定任意两个形状$X$，$Y$，返回一组变化值平移$c$，旋转$T$，缩放因子$b$，$Y$经过如下变化后得到$Z$，该变化可使得$Z$与$X$的平方和误差最小。</p>
+<p>$$Z = b×Y×T + c $$</p>
+<p>需要注意得是普氏分析中不需要裁剪图像并进行坐标变化，直接进行普氏分析，不论初始的shape在图像的哪里，得到的变换自然会将初始shape变化到下图中的红框里，因为要保证平方和最小。</p>
+<p><img src="/2018/06/20/SDM-experiment/img2.png" alt="table"></p>
+<p>将上述得到的3702个shape取均值就得到了mean_shape。需要注意的是这个mean_shape是用true_shape模拟检测器的条件下得到的(因为第一张图片是这么处理的)，因此如果用真正的检测器，这个mean_shape可能并不是一个好的初始shape。  </p>
+<h1 id="模型训练"><a href="#模型训练" class="headerlink" title="模型训练"></a>模型训练</h1><ol>
+<li>载入数据</li>
+</ol>
+<p>载入3702个训练数据，将3702张图片按照true_shape围成的最小bbox长和宽扩大两倍得到人脸图像，并裁减出来，然后缩放到400*400的尺寸下，对训练数据预处理。</p>
+<ol start="2">
+<li>数据增强</li>
+</ol>
+<p>为了增强数据，使训练得到的回归器有较好的鲁棒性，可以在true_shape围成的bbox加一些扰动。一个bbox的参数有四个，分别为$（x，y，w，h）$，将其分成两组二维高斯分布$（x，y）$，$（w，h）$。如果能估计出这二维高斯分布的参数，注意这个高斯分布是指偏差分布，我们就可以在true_shape估计出来的bbox上加扰动，进行数据增强。</p>
+<p>如何估计出高斯分布的参数？来一张训练集的图片，首先用它的true_shape得到真实的bbox，然后把前面得到的mean_shape铺设上去作为init_shape。铺设的时候先估算true_shape的中心点（考虑到人脸68点的中心点在bbox的中心靠上部分，因此认为中心点在$（0.5w，0.6h）$）和长宽，然后计算mean_shape中心点并且根据长宽进行尺寸缩放，将中心点重合就可以铺设mean_shape。由于上述true_shape的中心是估算的中心，所以两个shape中心并不是严格重合。分别计算true_shape和init_shape的中心，两者的中心之差$（Δx，Δy）$作为一组数据，3702个训练样本就可以得到3702组二维数据，这样就得到偏移量$（Δx，Δy）$的高斯分布。同样分别计算true_shape和init_shape围成的bbox的长和宽，就可以得到长和宽上的尺度误差的高斯分布。</p>
+<ol start="3">
+<li>求解特征点之差和特征向量</li>
+</ol>
+<p>使用true_shape模拟检测器得到bbox，在这个bbox的基础上增加扰动按照第二步得到的误差分布添加扰动，一张图像得到多个bbox，增加模型鲁棒性。</p>
+<p>得到init_shape后，我们就能得到$Δx$了。并且计算出init_shape处的特征向量$Φ$，关于特征向量，又名描述子。代码中默认选取HoG描述子。</p>
+<ol start="4">
+<li>求解最小二乘问题</li>
+</ol>
+<p>问题描述，求解$R$使得： </p>
+<p>$$ \min ||ΔX - RΦ||_2^2$$</p>
+<p>其中$ΔX ∈ R^{(68 × 2) × n×m}$,$Φ ∈ R^{(124 × 68) × n × m}$</p>
+<p>这里68为特征点的个数，128为每个特征点的特征向量的维数，$n$为样本量，这里为3702，$m$是每张图像扰动的bbox个数，实验中是5。</p>
+<p>这是个最小二乘问题，可以直接求解。</p>
+<p>求解后得到$R_0$，将数据更新得到新的$Δx$，$Φ$，求解$R_1$，代码中默认迭代7次，得到{$R_0,R_1,\cdots,R_6$}。</p>
+<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><p>测试时，首先载入数据和模型，根据true_shape或者检测器得到bbox，裁剪得到一张400×400的人脸图像，在bbox中心加上随机扰动得到10个扰动后的bbox，在10个bbox内铺设mean_shape，分别使用训练模型产生的{$R_k$}得到10个预测的shape，取均值作为最终的shape。</p>
+<h1 id="评价方法"><a href="#评价方法" class="headerlink" title="评价方法"></a>评价方法</h1><ul>
+<li><p>NME归一化平均误差,这里n为测试图像个数 。</p>
+<p><img src="/2018/06/20/SDM-experiment/img4.png" alt="table"></p>
+</li>
+</ul>
+<p>左眼形心就是下图37，38，39，40，41，42六个点坐标取平均，右眼形心就是43，44，45，46，47，48六点坐标的均值。</p>
+<p><img src="/2018/06/20/SDM-experiment/img3.png" alt="table"></p>
+<ul>
+<li><p>CED曲线，CED曲线横轴表示归一化误差值e，纵轴表示小于归一化e的图片占所有图片的比例。曲线与X包围面积越大说明模型越好。</p>
+<p><img src="/2018/06/20/SDM-experiment/img5.png" alt="table"> </p>
+</li>
+</ul>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Optimize/" rel="tag"><i class="fa fa-tag"></i> Optimize</a>
+          
+            <a href="/tags/Face-alignment/" rel="tag"><i class="fa fa-tag"></i> Face alignment</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/16/math-probability-MC/" rel="next" title="蒙特卡洛方法及其求积分应用">
+                <i class="fa fa-chevron-left"></i> 蒙特卡洛方法及其求积分应用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
 
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -331,6 +475,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -351,8 +499,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -438,6 +595,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数据预处理"><span class="nav-number">1.</span> <span class="nav-text">数据预处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模型训练"><span class="nav-number">2.</span> <span class="nav-text">模型训练</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#测试"><span class="nav-number">3.</span> <span class="nav-text">测试</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#评价方法"><span class="nav-number">4.</span> <span class="nav-text">评价方法</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -577,6 +750,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.0.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.0.0"></script>
+
+
 
   
 

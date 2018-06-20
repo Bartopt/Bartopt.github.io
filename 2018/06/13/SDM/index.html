@@ -134,7 +134,7 @@
 
 
 
-  <title>基于SDM的人脸特征点检测 | pH's blog</title>
+  <title>基于SDM的人脸特征点检测（一） | pH's blog</title>
   
 
 
@@ -278,7 +278,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">基于SDM的人脸特征点检测</h1>
+          <h1 class="post-title" itemprop="name headline">基于SDM的人脸特征点检测（一）</h1>
         
 
         <div class="post-meta">
@@ -358,6 +358,11 @@
 <p>以人脸特征点检测为例，SDM学会自变量在不同情况下该如何移动以保证优化问题的Loss降低，它学习一个映射$R$，$R$可以将点描述子的特征向量$Φ$映射到$Δx$。假设第10点是眼角，通过训练可以得到$R$，$R$矩阵中对应第10点的那一列可以根据第10点的描述子（可以是SIFT、HOG等），映射得到$Δx$，如果10点在脸上，此时描述子为$ Φ_1 $，$ R×Φ_1 $会得到Δx向眼睛方向移动，反之，如果10点在眼球上，此时描述子为$Φ_2$，$R×Φ_2$会得到Δx向远离眼睛方向移动。  </p>
 <p>SDM学习特定问题的优化过程，通过训练样本学得descent direction。测试样本到来时，仍是在解决优化问题，不过使用学习到的descent direction来解决新的优化问题，用级联回归模型完成优化任务。  </p>
 <p>那SDM是如何学习优化过程得到$R$的？优化过程本来是用Jacobi或hessian（论文中把这里记为$R$）和残差求$Δx$，但人脸特征点检测中训练样本的$Δx$已知，残差也已知，那么就可以反过来学习Jacobi或hessian（也就是$R$）。$Δx$<strong>就是监督信息</strong>。从机器学习来看，三大要素，数据、模型、策略。数据为$（Φ，Δx）$（特征向量，偏移量）；模型为线性模型$Δx=R×Φ$，策略是最小二乘。解决完该问题后得到$R_0$，将数据代入得到新的数据，然后可得到一系列的$R_k$。用级联回归的想法完成。  </p>
+<h1 id="实验环境及数据"><a href="#实验环境及数据" class="headerlink" title="实验环境及数据"></a>实验环境及数据</h1><h2 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h2><p>Matlab 2017b</p>
+<p>依赖库：</p>
+<p>Mexopencv 3.0.0 提供人脸检测接口</p>
+<p>Vlfeat library 提供HoG描述子计算接口</p>
+<h2 id="实验数据"><a href="#实验数据" class="headerlink" title="实验数据"></a>实验数据</h2><p>训练集afw，helen，lfpw，测试集ibug，<a href="https://ibug.doc.ic.ac.uk/resources/300-W/" target="_blank" rel="noopener">数据下载</a></p>
 <h1 id="实验结果及分析"><a href="#实验结果及分析" class="headerlink" title="实验结果及分析"></a>实验结果及分析</h1><p>一共做了四组对比实验，用线性模型 还是原始的优化模型 ； $ R_0 $ ，$R_1$都是描述子到位移映射，那重复使用$R_0$效果如何，因为我们认为不同R之间只是序列上的区别，本质上没有区别。 具体设计如下  <img src="/2018/06/13/SDM/SDM_table.png" alt="table"></p>
 <p>CED曲线如下，比较四个实验的CED，从可以看出实验1的效果最好，其次是实验3，实验2和实验4效果不好，可能是尺度上的原因，第一步映射比较大，可以尝试使用衰减系数。实验2效果差于实验1原因可能是$Φ^*$估计的不准确，导致实际测试中误差较大。   </p>
 <p><img src="/2018/06/13/SDM/SDM_CED.png" alt="CED"></p>
@@ -496,7 +501,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -573,7 +578,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#算法原理"><span class="nav-number">1.</span> <span class="nav-text">算法原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实验结果及分析"><span class="nav-number">2.</span> <span class="nav-text">实验结果及分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自制DEMO"><span class="nav-number">3.</span> <span class="nav-text">自制DEMO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#展望与收获"><span class="nav-number">4.</span> <span class="nav-text">展望与收获</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#算法原理"><span class="nav-number">1.</span> <span class="nav-text">算法原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实验环境及数据"><span class="nav-number">2.</span> <span class="nav-text">实验环境及数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#实验环境"><span class="nav-number">2.1.</span> <span class="nav-text">实验环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验数据"><span class="nav-number">2.2.</span> <span class="nav-text">实验数据</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实验结果及分析"><span class="nav-number">3.</span> <span class="nav-text">实验结果及分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自制DEMO"><span class="nav-number">4.</span> <span class="nav-text">自制DEMO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#展望与收获"><span class="nav-number">5.</span> <span class="nav-text">展望与收获</span></a></li></ol></div>
             
 
           </div>
