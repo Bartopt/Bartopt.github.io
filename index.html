@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="PH's Blog" />
+  <meta name="keywords" content="Linux,Ubuntu," />
 
 
 
@@ -86,17 +86,20 @@
 
 
 
-<meta name="description" content="郝鹏我是一名在读硕士，目前就读于中科院自动化研究所,专业是控制理论与控制工程。导师是王云宽研究员。   在我来到自动化所之前，我在天津大学学习材料加工工程，此外辅修工程管理专业。很高兴自己可以换个环境继续求学：） 我的家乡是山西运城，我就读于山西省新绛中学。一所以课程改革闻名的中学，我在这里自学考上大学：）">
-<meta property="og:type" content="website">
-<meta property="og:title" content="吾面对青山而举目">
-<meta property="og:url" content="http://yoursite.com/about/index.html">
+<meta name="description" content="之前用Linux的话一直在虚拟机上使用，感觉不够酷，然后今天很想折腾，于是卸掉虚拟机：）装上了双系统。 流程基本上是按照这个博客来的，此外需要注意几点  只有BIOS才可以用这个方式安装，UEFI引导的话需要用启动盘安装，判断电脑的引导方式可自行百度。 主分区压缩出来的空间称为未分配空间，逻辑分区压缩出来的空间称为可用空间，这个不影响安装。 安装Ubuntu分区设置时一共要设置四个分区，第一次设置">
+<meta name="keywords" content="Linux,Ubuntu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hello Linux">
+<meta property="og:url" content="http://yoursite.com/2018/06/20/hello-Linux/index.html">
 <meta property="og:site_name" content="吾面对青山而举目">
-<meta property="og:description" content="郝鹏我是一名在读硕士，目前就读于中科院自动化研究所,专业是控制理论与控制工程。导师是王云宽研究员。   在我来到自动化所之前，我在天津大学学习材料加工工程，此外辅修工程管理专业。很高兴自己可以换个环境继续求学：） 我的家乡是山西运城，我就读于山西省新绛中学。一所以课程改革闻名的中学，我在这里自学考上大学：）">
+<meta property="og:description" content="之前用Linux的话一直在虚拟机上使用，感觉不够酷，然后今天很想折腾，于是卸掉虚拟机：）装上了双系统。 流程基本上是按照这个博客来的，此外需要注意几点  只有BIOS才可以用这个方式安装，UEFI引导的话需要用启动盘安装，判断电脑的引导方式可自行百度。 主分区压缩出来的空间称为未分配空间，逻辑分区压缩出来的空间称为可用空间，这个不影响安装。 安装Ubuntu分区设置时一共要设置四个分区，第一次设置">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-06-13T08:43:00.838Z">
+<meta property="og:image" content="http://yoursite.com/2018/06/20/hello-Linux/img2.png">
+<meta property="og:updated_time" content="2018-06-20T12:41:33.731Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="吾面对青山而举目">
-<meta name="twitter:description" content="郝鹏我是一名在读硕士，目前就读于中科院自动化研究所,专业是控制理论与控制工程。导师是王云宽研究员。   在我来到自动化所之前，我在天津大学学习材料加工工程，此外辅修工程管理专业。很高兴自己可以换个环境继续求学：） 我的家乡是山西运城，我就读于山西省新绛中学。一所以课程改革闻名的中学，我在这里自学考上大学：）">
+<meta name="twitter:title" content="Hello Linux">
+<meta name="twitter:description" content="之前用Linux的话一直在虚拟机上使用，感觉不够酷，然后今天很想折腾，于是卸掉虚拟机：）装上了双系统。 流程基本上是按照这个博客来的，此外需要注意几点  只有BIOS才可以用这个方式安装，UEFI引导的话需要用启动盘安装，判断电脑的引导方式可自行百度。 主分区压缩出来的空间称为未分配空间，逻辑分区压缩出来的空间称为可用空间，这个不影响安装。 安装Ubuntu分区设置时一共要设置四个分区，第一次设置">
+<meta name="twitter:image" content="http://yoursite.com/2018/06/20/hello-Linux/img2.png">
 
 
 
@@ -128,7 +131,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/about/"/>
+  <link rel="canonical" href="http://yoursite.com/2018/06/20/hello-Linux/"/>
 
 
 
@@ -248,6 +251,152 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/29/CV-SIFT/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hao Peng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="吾面对青山而举目">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/06/29/CV-SIFT/" itemprop="url">SIFT算法介绍及C语言实现</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-29T23:48:24+08:00">2018-06-29</time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Course-project/" itemprop="url" rel="index">
+                    <span itemprop="name">Course project</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          前言SIFT英文全称为scale-invariant feature transform，即尺度不变特征变化，参考Wikipedia的定义，SIFT算法是计算机视觉领域用于检测并描述图像局部特征一种方法，它广泛应用于物体识别、机器人建图、三维重建、姿态估计等问题。像它的名字那样，SIFT构造出的关键
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/06/29/CV-SIFT/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1040,7 +1189,7 @@ Output: mea
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1062,7 +1211,7 @@ Output: mea
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

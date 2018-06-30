@@ -137,7 +137,7 @@
 
 
 
-  <title>蒙特卡洛方法及其求积分应用 | 吾面对青山而举目</title>
+  <title>SIFT算法介绍及C语言实现 | 吾面对青山而举目</title>
   
 
 
@@ -264,7 +264,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/16/math-probability-MC/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/29/CV-SIFT/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Hao Peng">
@@ -281,7 +281,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">蒙特卡洛方法及其求积分应用</h1>
+          <h1 class="post-title" itemprop="name headline">SIFT算法介绍及C语言实现</h1>
         
 
         <div class="post-meta">
@@ -293,7 +293,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-16T10:58:53+08:00">2018-06-16</time>
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-29T23:48:24+08:00">2018-06-29</time>
             
 
             
@@ -314,8 +314,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Mathematics/" itemprop="url" rel="index">
-                    <span itemprop="name">Mathematics</span>
+                  <a href="/categories/Course-project/" itemprop="url" rel="index">
+                    <span itemprop="name">Course project</span>
                   </a>
                 </span>
 
@@ -351,58 +351,24 @@
       
 
       
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最初听到蒙特卡洛方法（Monte Carlo，下文用MC代替）是在本科的工程经济学课堂上，当时汪帅（汪洋老师是个特别有人格魅力的老师，同学们都被他的折服，他还是我答辩的三位老师之一：））提到了用MC解决一个现金流的估值然后决策的问题。</p>
-<p>这学期的CV中又提到粒子滤波做运动跟踪的任务，其中涉及到了MC，重要性采样（IS）等，MC方法应用广泛，RL中也用到了它，还有一些微积分问题也可以转化为MC方法可解决的问题。</p>
-<p>本文主要介绍MC方法以及它是如何用到求积分问题上。</p>
-<h1 id="MC方法"><a href="#MC方法" class="headerlink" title="MC方法"></a>MC方法</h1><p>学习一个方法，我们先要知道输入是什么，输出是什么，这个方法做了什么，完成了什么任务，知道这些后再学习具体流程才会有更好的理解。</p>
-<p>那么MC方法解决什么问题呢，它的核心在于求一个随机变量的期望问题，如下所示，离散或者连续分布都可以，但是这个分布的概率分布$p(x)$必须是已知的。MC方法说的是你可以按已知的概率分布采样，只要你采样足够多，那么就可以得到这个随机变量的期望。</p>
-<p>$$ E(x) = \int xp(x)dx$$</p>
-<p>$$ E(x) = x_1p(x_1) + x_2p(x_2) + … + x_np(x_n)$$ </p>
-<p>$$  E(x) = \frac{1}{N} \sum_{i=1}^N{x_i}$$</p>
-<p>对于离散随机变量，如果知道它的分布，直接可以用公式求取期望，不一定需要用到MC，但用MC也work。尤其是伯努利分布时，如果概率$p$未知还可以通过求期望估计出$p$，最简单的例子就是通过抛硬币实验得到正面的概率为0.5，此外撒点求面积也是这个思路。对于连续型随机变量，即使你知道概率密度，但也存在着不好积分问题，这时就可以通过MC方法求期望。 </p>
-<h1 id="采样方法"><a href="#采样方法" class="headerlink" title="采样方法"></a>采样方法</h1><p>那这样连续随机变量求期望的问题是不是就已经解决了？当然不是，还有一个问题，我们如何获得服从特定分布的采样？一般来说有以下方法。</p>
-<h2 id="逆采样"><a href="#逆采样" class="headerlink" title="逆采样"></a>逆采样</h2><p>也就是随机数发生器。对任意随机变量$s$的概率密度函数积分可以得到累计分布函数（CDF），CDF横轴是随机变量取值范围，纵轴是[0,1]。然后我们交换横纵坐标轴，可以得到下面的图，计算机可以产生[0,1]的均匀分布的样本点，然后做逆变换就可以得到服从随机变量$x$分布的采样。</p>
-<p><img src="/2018/06/16/math-probability-MC/img1.png" alt="img1"></p>
-<p>这是一种处理随机变量的技巧，图像处理中的直方图均衡化用的也是用的这个技巧。对于任给的随机变量$s$，都可以做一种变换$T^{-1}(s)$，使新得到的随机变量$r$是[0,1]区间上的均匀分布。以上具体推导与证明可以参考《数字图像处理（第二版）》72页。</p>
-<h2 id="重要性采样"><a href="#重要性采样" class="headerlink" title="重要性采样"></a>重要性采样</h2><p>逆采样的方法就是构造随机数发生器，但这个过程中要求$p(x)$的积分。但是我们本来就是因为积分难求才用采样的方法来求期望，因此逆采样的方法有很大的局限性，因此引申出重要性采样的方法。</p>
-<p>公式如下图所示，这里$f(x)$可以先看做是$x$，稍后我们会将其扩展到$x$的任意函数，原理见后面的LOTUS定理。$p(x)$为待求随机变量$x$的概率密度函数，$q(x)$为我们已知的一个概率密度函数，可以是均匀分布等，它的CDF很容易得到，这样就可以将按照$p(x)$采样的问题转换为按照$q(x)$采样，只需要对采样出来的随机变量乘以$\frac{p(x)}{q(x)}$就可以了，这样多次采样我们就可以求出原问题的期望。这里$\frac{p(x)}{q(x)}$称为重要性权重。 </p>
-<p><img src="/2018/06/16/math-probability-MC/img3.jpg" alt="img3"> </p>
-<p>上述两种方法只是很基础的采样方法，此外还有拒绝采样，MCMC等。  </p>
-<h1 id="MC求积分"><a href="#MC求积分" class="headerlink" title="MC求积分"></a>MC求积分</h1><p>观察下式，用MC方法求随机变量$x$的期望的过程相当于求了$g(x) = xp(x)$这个函数的积分，积分区间为$x$的取值区间。因此在求$g(x)$的定积分时，就可以构造随机变量$x$与分布$p(x)$，用MC方法求积分问题。</p>
-<p>$$   \frac{1}{N} \sum_{i=1}^N{x_i} = E(x) = \int xp(x) =  \int xp(x)dx = \int g(x)dx$$</p>
-<p>但是上述函数形式为$x$，而我们实际的积分函数可以是$x$的任意函数$g(x)$，如果随机变量换成函数值，我们又不知道函数值$g(x)$的分布。那这个事情如何来做？已经有人想好了，参考<a href="https://en.wikipedia.org/wiki/Law_of_the_unconscious_statistician" target="_blank" rel="noopener">无意识统计学家法则（Law of the unconscious statistician）</a>。</p>
-<p>LOTUS到底表达了一件什么事呢？它的意思是：已知随机变量$X$的概率分布，但不知道$g(X)$的分布，此时用LOTUS公式能计算出函数$g(X)$的数学期望。LOTUS的公式如下：</p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>SIFT英文全称为scale-invariant feature transform，即尺度不变特征变化，参考<a href="https://en.wikipedia.org/wiki/Scale-invariant_feature_transform" target="_blank" rel="noopener">Wikipedia</a>的定义，SIFT算法是计算机视觉领域用于检测并描述图像局部特征一种方法，它广泛应用于物体识别、机器人建图、三维重建、姿态估计等问题。像它的名字那样，SIFT构造出的关键点描述子有尺度不变，旋转不变等特性，此外归一化操作使得它对光照强度也有一定的鲁棒性。</p>
+<p>SIFT算法由大神David Lowe发表于1999年的IJCV，后来Lowe又在2004年ICCV上对算法改进并发表，两篇论文有着惊人的引用量，可以称为Lowe的成名作。</p>
+<p><img src="/2018/06/29/CV-SIFT/img5.png" alt="table"></p>
+<h1 id="算法简介"><a href="#算法简介" class="headerlink" title="算法简介"></a>算法简介</h1><p>SIFT作为一个超级经典的方法，网上有诸多的资料，因此本文就不详细介绍了，只讲一下大致的流程。</p>
+<p>SIFT算法可分为三个部分：</p>
 <ul>
-<li>X是离散分布时</li>
+<li>寻找关键点，构建高斯差分尺度空间并寻找关键点，迭代定位关键点的准确位置，去除角点以及弱响应点，统计邻域内的梯度图，得到关键点的主方向</li>
+<li>构造关键点描述子，将邻域分为4×4个小方格，并计算每个小方格内8个方向的梯度图，连接所有即可形成关键点的128维描述子，归一化可以使得增强描述子对光照的鲁棒性</li>
+<li>关键点匹配，匹配方法有最近邻（NN），最近邻与次近邻比率（NNDR），NN+RANSAC，NNDR+RANSAC</li>
 </ul>
-<p>$$E[g(X)]=∑_xg(x)f_X(x)$$</p>
-<ul>
-<li>X是连续分布时</li>
-</ul>
-<p>$$E[g(X)]=∫_{−∞}^∞g(x)fX(x)dx$$</p>
-<p>其实就是在计算期望时，用已知的$X$的PDF（或PMF）代替未知的$g(X)$的PDF（或PMF）。这说明我们在求$g(x)$的期望时，可以按照$x$的分布来采样，比较直观的理解就是它可以融合对应同一个$g(x)$的概率值。以离散随机变量为例，假设$g(x)= x^2 $，$x ={1,-1}$，$p(x = 1) = 0.5$，$p(x = -1) = 0.5$，$g(x)= {1}$，我们<strong>可以</strong>在不知道$g(x)$分布的前提下，直接利用$x$的分布计算出$g(x)$的期望。虽然会多进行了一次运算，但最后结果是一致的。其实就是这样做会将对应的概率值融合，直观理解是这样，同时LOTUS也告诉我们这样做是对的。</p>
-<p>$$E[g(X)] =x_1^2p(x = 1) + x_2^2p(x = -1) =  1 × 0.5 + 1 × 0.5 = 1$$</p>
-<p>因此对于任意函数$g(x)$的积分问题，我们都可以构造随机变量$h(x) =  \frac{g(x)}{f(x)} $，$f(x) 服从 U(a，b)$，然后按照$f(x)$对$h(x)$采样，其期望值就是函数$g(x)$的积分。 </p>
-<p>需要注意的是MC方法最本质的就是要解决随机变量的期望问题，而不是解决积分问题，积分问题只是MC方法的一个应用，我刚开始理解的不对，以至于看到期望的积分表达式还想把他变成积分问题来做，这样其实多此一举，但是如果这样做就是在做重要性采样。</p>
-<p> 对于真正的积分问题（不是随机变量求期望问题），一定不需要做重要性采样，直接均匀分布就ok，因为它本身就不是随机变量，我们只用构造一个简单的随机变量（比如均匀分布）就可以了。重要性采样是对针对随机变量的采样问题的。</p>
-<h1 id="MC如何解释撒点法求面积"><a href="#MC如何解释撒点法求面积" class="headerlink" title="MC如何解释撒点法求面积"></a>MC如何解释撒点法求面积</h1><p>问题如下，就是如何求得红色圆形的面积，当然我们都知道可以用撒点法来做。但是撒点法求如下圆的面积的理论依据是什么，用MC方法解释的话，求得的期望值是面积，但随机变量是什么？这个问题的来源是我看了一篇<a href="https://blog.csdn.net/ArtistA/article/details/51570878" target="_blank" rel="noopener">博客</a>，他认为需要用重要性采样的方法来解释撒点法算面积。</p>
-<p><img src="/2018/06/16/math-probability-MC/img5.jpg" alt="img5"> </p>
-<p>我首先讲一下我对这个问题的理解，我们做这个事情的先验知识为如果两个维度都服从均匀分布并随机扔一个点，那么点落在圆内的概率$(p)$=圆的面积（$S_c$）/正方形的面积（$S_s$），因此构造离散随机变量$X$</p>
-<p>$$ X = \begin{cases}  0 &amp; 点在圆外 \\ S_s &amp; 点在圆内 \end{cases} $$</p>
-<p>$X(0) = 1 - p$,  $X(1) = p$,   $E(x) = S_sp$, 那通过MC的方法就可以得到随机变量$X$的期望$E(x) = S_sp$，而$S_sp = S_c$，那么就能得到$S_c$，大功告成，完全不需要重要性采样解释。 </p>
-<p>同时我按照上述博客中的思路，从重要性采样的角度分析了一下，感觉只是为了解释而解释。如果用重要性采样解释的的话，原始问题如左图形式，随机变量也就是圆的面积$S_c$不知道是什么，$g(x)$是他的分布，但也不知道具体形式。用重要性采样的方法转化为右图形式，$p(x)$是均匀分布，重要性权重$ \frac{g(x)}{p(x)}$是指示函数，落在圆内为1，圆外为0，认为$S_c$是指示函数$ \frac{g(x)}{p(x)}$的函数，指示函数为0，$S_c = 0$，指示函数为1，$S_c = S_s$，因此整个采样过程就被套在了重要性采样的框架下，但是感觉很牵强，为了解释而解释。其实在我的解释中随机变量$X$就充当了$ S_c \frac{g(x)}{f(x)}$这部分的角色。</p>
-<p><img src="/2018/06/16/math-probability-MC/img7.jpg" alt="img7"> </p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
-<li>MC方法能做什么，已知随机变量的分布，用这个分布采样求随机变量的期望。</li>
-<li>由于LOTUS的保证，MC方法也可以求随机变量函数$f(x)$的期望，按照$x$的分布采样就可以，可以从融合相同取值的概率可以获得直观理解。对$x$采样就可以获得$f(x)$分布的采样。</li>
-<li>原始采样无法通过逆采样获得时，可通过重要性采样曲线求期望。</li>
-<li>积分问题可通过构造随机变量转化为求随机变量的期望问题，进而用MC方法做，一般转化为均匀分布的随机变量。</li>
-</ul>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li>重要性采样：<a href="https://blog.csdn.net/ArtistA/article/details/51570878" target="_blank" rel="noopener">https://blog.csdn.net/ArtistA/article/details/51570878</a> </li>
-<li>采样方法：<a href="https://blog.csdn.net/Dark_Scope/article/details/70992266" target="_blank" rel="noopener">https://blog.csdn.net/Dark_Scope/article/details/70992266</a> </li>
-<li>MC求积分：<a href="https://blog.csdn.net/baimafujinji/article/details/53869358" target="_blank" rel="noopener">https://blog.csdn.net/baimafujinji/article/details/53869358</a> </li>
-</ul>
+<p>算法流程如下：</p>
+<p><img src="/2018/06/29/CV-SIFT/img7.png" alt="table"></p>
+<h1 id="C语言实现"><a href="#C语言实现" class="headerlink" title="C语言实现"></a>C语言实现</h1><p>本学期在UCAS的CV课上，课程作业要求用纯C语言实现SIFT算法。给定两张图片，要求用SIFT完成图像对应点的匹配。因为不能使用第三方库（OpenCV做这个是分分钟的事），所以不仅要实现SIFT算法，还要实现读取bmp图像、绘制匹配点、绘制匹配图像、储存图像等辅助功能。在代码实现过程中有许多细节，我主要参考了这篇<a href="https://blog.csdn.net/zddblog/article/details/7521424" target="_blank" rel="noopener">博客</a>。放上最终效果图。</p>
+<p><img src="/2018/06/29/CV-SIFT/img6.png" alt="table"></p>
+<p>虽然刚开始有点棘手，但整个做下来受益匪浅，尤其对C的指针以及结构体理解加深了许多。三级指针用的飞起：）</p>
+<p>下面可能是学弟学妹最喜欢的源码了，听说每年CV课都是这个作业：）</p>
+<p>Anyway，Honor Code .</p>
+<p>仓库：<a href="https://github.com/Bartopt/C_SIFT" target="_blank" rel="noopener">https://github.com/Bartopt/C_SIFT</a></p>
 
       
     </div>
@@ -420,9 +386,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Probability/" rel="tag"><i class="fa fa-tag"></i> Probability</a>
+            <a href="/tags/SIFT/" rel="tag"><i class="fa fa-tag"></i> SIFT</a>
           
-            <a href="/tags/Monte-Carlo/" rel="tag"><i class="fa fa-tag"></i> Monte Carlo</a>
+            <a href="/tags/Computer-Vision/" rel="tag"><i class="fa fa-tag"></i> Computer Vision</a>
           
         </div>
       
@@ -435,8 +401,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/06/15/math-matrix-eigenvalue/" rel="next" title="利用特征值分解理解矩阵特征值和特征向量的几何意义">
-                <i class="fa fa-chevron-left"></i> 利用特征值分解理解矩阵特征值和特征向量的几何意义
+              <a href="/2018/06/20/hello-Linux/" rel="next" title="Hello Linux">
+                <i class="fa fa-chevron-left"></i> Hello Linux
               </a>
             
           </div>
@@ -444,10 +410,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/06/20/SDM-experiment/" rel="prev" title="基于SDM的人脸特征点检测（二）">
-                基于SDM的人脸特征点检测（二） <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -605,7 +567,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MC方法"><span class="nav-number">2.</span> <span class="nav-text">MC方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#采样方法"><span class="nav-number">3.</span> <span class="nav-text">采样方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#逆采样"><span class="nav-number">3.1.</span> <span class="nav-text">逆采样</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重要性采样"><span class="nav-number">3.2.</span> <span class="nav-text">重要性采样</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MC求积分"><span class="nav-number">4.</span> <span class="nav-text">MC求积分</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MC如何解释撒点法求面积"><span class="nav-number">5.</span> <span class="nav-text">MC如何解释撒点法求面积</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#算法简介"><span class="nav-number">2.</span> <span class="nav-text">算法简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#C语言实现"><span class="nav-number">3.</span> <span class="nav-text">C语言实现</span></a></li></ol></div>
             
 
           </div>
